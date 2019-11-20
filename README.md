@@ -68,8 +68,11 @@ for(String line : lines){
 out.close()
 ```
   에러가 발생 하면 out은 close 가 안된다.
+   - 따라서, finally 에서 반드시 close 처리를 해야한다.
+   - JDK 1.7 버전에서는 이런 번거로움, 그리고 보기 힘든 코드를 지양하기 위해 try with resource 를 사용한다.
+   - [try_with_resource](https://dololak.tistory.com/67)
    - catch 에서 최대한 자세하게 예외처리를 한다.
-
+   
 6.1 제네릭 클래스
 * [제네릭 참고 사이트](https://palpit.tistory.com/665)
 * Chapter6 > Generic 폴더에 예제 첨부

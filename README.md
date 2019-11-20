@@ -73,8 +73,100 @@ out.close()
    - [try_with_resource](https://dololak.tistory.com/67)
    - catch 에서 최대한 자세하게 예외처리를 한다.
    
-6.1 제네릭 클래스
+####6. 제네릭 프로그래밍
 * [제네릭 참고 사이트](https://palpit.tistory.com/665)
 * Chapter6 > Generic 폴더에 예제 첨부
 
+* 6-1 제네릭 클래스
+    * 타입 매개변수가 한 개 이상 있는 클래스
+    ```java
+    public class Entry<K,V> {
+      private K key;
+      private V value;
+      
+      public Entry(K key, V value) {
+          this.key = key;
+          this.value = value;
+      }
+      public K getKey() {
+          return key;
+      }   
+      
+      public V getValue() {
+          return value;
+      }   
+  }
+  ```
+    * 사용
+  ```java
+    Entry<String, Integer> entry = new Entry<>("Fred", 42);
+  ```  
+* 6-2 제네릭 메서드
+    * 제너릭 클래스가 타입 매개변수를 받는 클래스인 것처럼 **제너릭 메서드**는 타입 매개변수를 받는 메서드다. 
+    * 배엘에 있는 요소를 교환하는 메서드 (기본 타입을 제외)
+    ```java
+       public class Arrays {
+          public static <T> void swap(T[] array, int i, int j) {
+              T temp = array[i];
+              array[i] = array[j];
+              array[j] = temp;
+          }
+       }    
+    ```
+    * 사용
+    ```java
+    String[] friends = ...;
+    Arrays.swap(friends, 0, 1);
+    ```
+* 6-3 타입 경계
+  * 제네릭 클래스나 제네릭 메서드가 받는 타입 매개변수의 타입을 제한해야 할 때도 있다. 이때, 타입경계(type bound)를 사용한다.  
+  ```java
+    public static <T extends AutoCloseable> void closeAll(ArrayList<T> elems) throws Exception {
+      for (T elem : elems) {
+          elem.close();
+      }
+    }
+  ```
+  * ArrayList<PrintStream> 은 전달 가능, ArrayList<String> 은 전달 불가능.
+  * extends AutoCloseable 은 요소 타입이 AutoCloseable 의 서브타입임을 보장한다.
+  
+* 6-4 타입 가변성과 와일드 카드
+    * ArrayList<Manager> 는 ArrayList<Employee>의 서브타입이 아니다.
+    
+    6.4.1 서브타입 와일드 카드
+        
+    ```java
+    //이를 해결하기 위해서 서브 타입 와일드 카드를 사용하자.
+    public static void printNames(ArrayList<? extends Employee> staff) {
+      for (int i = 0; i < staff.size(); i++) {
+          Employee e = staff.get(i);
+          System.out.println(e.getName());
+      }
+    }
+    ```
+    
+    6.4.2 슈퍼타입 와일드 카드
+    
+    ```java
+      public interface Predicate<T> {
+          boolean test(T arg);
+      }   
+    ```
+    ```java 
+      printAll(employee, e -> e.getSalary() > 100000);
+  
+      Predicate<Object> evenLength = e -> e.toString().length() % 2 == 0;
+      printAll(employee, evenLength);
+    ```
+    * 결국 모든 Employee 는 toString 메서드가 있는 Object 이기 때문에 Object 타입에도 문제가 없어야 한다.
+    ```java
+      //이를 해결하기 위해서 슈퍼 타입 와일드 카드를 사용하자.
+      public static void printAll(Employee[] staff, Predicate<? super Employee> filter) {
+          for (Employee e : staff) {
+              if(filter.test){
+                  System.out.println(e.getName());
+              }   
+          }     
+      }
+    ```
  

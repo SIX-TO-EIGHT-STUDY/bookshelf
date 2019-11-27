@@ -169,4 +169,40 @@ out.close()
           }     
       }
     ```
+    6.4.5 와일드 카드 캡쳐
+    ```java
+      public static void swap(ArrayList<?> elements, int i, int j) {
+          ? temp = elements.get(i); // 작동하지 않는다.
+          elements.set(i, elements.get(j));
+          elements.set(j, temp);
+      }
+    ```
+    ?를 타입 인수로는 사용할 수 있지만, 타입으로는 사용할 수 없다. 하지만 이문제를 우회해서 해결하는 방법은 있다.
+    ```java
+      public static void swap(ArrayList<?> elements, int i, int j) {
+          swapHelper(elements, i, j);
+      }
+
+      private static <T> void swapHelper(ArrayList<T> elements, int i, int j) {
+          T temp = elements.get(i);
+          elements.set(i, elements.get(j));
+          elements.set(j, temp); 
+      }
+    ```
+  
+    와일드카드 캡쳐라는 특별한 규칙 덕분에 swapHelper 호출은 유효하다. 컴파일러는 ?가 무엇인지 모르지만, ?는 어떤 타입을 나타내므로
+    제네릭 메서드를 호출해도 된다.
+    와일드카드 캡처로 얻을 수 있는 이점은 뭘까? API 사용자가 제네릭 매서드 대신 이해하기 쉬운 ArrayList<?>를 볼 수 있다는 이점을 얻을 수 있다.
+    
  
+* 6.6 제네릭의 제약
+    * 기본타입 인수를 사용할 수 없다.
+    
+        타입 매개변수는 절대로 기본타입이 될 수 없다. ex) ArrayList<int> (X)
+    
+    * 실행 시간에는 모든 타입이 로(raw) 형태다. ex) raw 형태 List, Set...
+    * 타입 변수를 인스턴스화할 수 없다.
+    
+    
+   
+       

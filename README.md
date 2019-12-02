@@ -73,7 +73,7 @@ out.close()
    - [try_with_resource](https://dololak.tistory.com/67)
    - catch 에서 최대한 자세하게 예외처리를 한다.
    
-####6. 제네릭 프로그래밍
+#### 6.제네릭 프로그래밍
 * [제네릭 참고 사이트](https://palpit.tistory.com/665)
 * Chapter6 > Generic 폴더에 예제 첨부
 
@@ -203,6 +203,47 @@ out.close()
     * 실행 시간에는 모든 타입이 로(raw) 형태다. ex) raw 형태 List, Set...
     * 타입 변수를 인스턴스화할 수 없다.
     
+#### 7. 컬렉션
+
+* 7.1 컬렉션 프레임워크 개요
+    * 컬렉션을 처리하는 메서드를 구현할 때는 가장 덜 제한적인 인터페이스를 매개변 타입으로 사용하자
+    * 보통은 Collection, List, Map 이면 충분하다.
     
-   
-       
+* 7.2 반복자
+    * Collection 의 슈퍼 인터페이스 Iterable<T>에는 다음 메소드가 선언되어 있다.
+    * Iterator<T> iterator()
+    
+* 7.3 집합
+    * 요소를 추가한 순서는 기억하지 않는다.
+    * TreeSet 은 정렬된 순서로 집합을 순회한다.
+    
+* 7.4 맵
+    * 키를 정렬순서로 방문하는 경우가 아니라면 보통은 해시맵을 선택하는 것이 좋다. 정렬 순서로 방문하려면 TreeMap을 사용한다.
+    ```java
+      Map<String, Integer> counts = new HashMap<>();
+      counts.put("Alice", 1);
+      counts.put("Alice", 2); //키에 대응하는 값을 업데이트
+  
+      //키를 얻는 방법
+      int count = counts.get("Alice");
+  
+      //get 메서드는 키가 없으면 null 을 반환한다. 따라서 NullPointerException 막기위해선 다음과 같이 호출하는 것이 낫다.
+      int count = counts.getOrDefault("Alice", 0);
+        
+      // 키가 아직 없으면 word를 1로 설정 있으면 Integer::sum 함수로 기존값에 1을 더한다.
+      counts.merge(word, 1, Integer::sum);
+  
+    ```
+  
+    * 순회 
+    ```java
+    for(Map.Entry<String, Integer> entry : counts.entrySet()) {
+      String k = entry.getKey();
+      Integer v = entry.getValue();
+      // k, v 를 처리한다.
+    }
+    
+    counts.forEach((k, v) -> {
+      // k, v 를 처리한다.
+    });
+    ```

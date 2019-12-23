@@ -271,4 +271,6 @@ out.close()
 ex) Stream<String> longestFirst = words.stream().sorted(Comparator.comparing(String::length).reversed());
 
 8.7 옵션 타입
-* [자바8_Optional:Optional을_Optional답게](https://www.daleseo.com/java8-optional-effective/) 
+* [자바8_Optional:Optional을_Optional답게](https://www.daleseo.com/java8-optional-effective/)
+
+ 

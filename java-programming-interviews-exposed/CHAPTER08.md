@@ -35,3 +35,22 @@
 #### 인터닝이란 무엇인가?
 * 클래스가 JVM 에 로드되면 모든 리터럴이 상수 풀에 위치하게 된다. 그리고 String 리터럴의 모든 밥복은 풀 안의 같은 상수를 참조해서 이루어지는데, 이를 String 인터닝(interning) 이라고 한다.
 * [참고_상수풀](https://ict-nroo.tistory.com/18) 
+
+#### 제네릭 이해하기
+#### 컬렉션 API 에서 제네릭을 어떻게 사용하는지 설명하라.
+* 컬렉션 클래스에서 제네릭을 사용했을 때 컴파일러는 특정 타입만 포함될 수 있게 컬렉션을 제한한다.
+
+#### 타입의 변화는 제네릭에 어떻게 영향을 미치는가?
+```java
+class A {}
+class B extends A {} 
+```
+* B는 A의 하위 타입이다. 하지만 List<B> 는 List<A>의 하위 타입이 아니다.
+* 제네릭 타입을 다룰 때는 때때로 클래스의 하위 타입을 받아들여야 하는 경우도 있다.
+* 따라서 pushAllA의 메서드 시그니처는 A 클래스와 A의 모든 클래스에서 실행될 수 있도록 명시적으로 변경되어야 한다.
+```java
+// 기존
+public static GenericStack<A> pushAllA(final List<A> listOfA) {}
+// 변경
+public static GenericStack<A> pushAllA(final List<? extends A> listOfA) {}
+```

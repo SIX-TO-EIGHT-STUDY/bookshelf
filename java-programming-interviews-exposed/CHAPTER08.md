@@ -54,3 +54,71 @@ public static GenericStack<A> pushAllA(final List<A> listOfA) {}
 // 변경
 public static GenericStack<A> pushAllA(final List<? extends A> listOfA) {}
 ```
+#### 오토박싱과 언박싱 이해하기
+#### NullPointerException 이 발생했을 때 원시타입에 접근할 수 있는가?
+* 아니오. 컴파일러가 Integer 타입을 int 타입으로 변경할 때는 null 값이 아니라고 생각한다.
+* 그래서 null 이 되면 즉시 NullPointerException 이라는 예외가 발생한다.
+
+#### 예외 처리하기
+#### 자바의 예외 처리 구조를 이루는 주요 클래스를 설명하라.
+* 모든 클래스는 Throwable 클래스를 확장해서 예외 처리를 할 수 있다.
+* Throwable 는 Error 와 Exception 이라는 두 개의 하위 클래스를 갖는데, 필요한 곳에서 Exception 클래스를 확인하고 수정하는 것은 대개 프로그래머의 책임이다.
+* Error 는 OutOfMemoryError 나 NoClassDefFoundError 클래스처럼 프로그래머 스스로 복구할 수 있는 것은 아니다.
+* 예외는 runtime exception 이거나 checked exception 두 가지로 구분된다.
+
+#### 연쇄 예외란 무엇인가?
+* 새 예외의 생성자에는 이전 예외에 대한 참조를 추가한다.
+* 따라서 연쇄 예외에서 Stack trace 를 확인하면 Application console 에 Caused by 라는 행으로 시작하는 전체 경로를 출력한다. 
+이 메시지에서 가리키는 것은 새로운 예외나 다시 처리하기 전에 래핑된 원 예외다.
+
+#### 표준 자바 라이브러리 사용하기
+#### 왜 private 인 필드가 변하지 않도록 하기 위해 final 키워드를 선언해야 하는가?
+* 접근자 메서드가 없는 final 지시자로 선언한 클래스가 있고 모든 필드가 private 경우, 프레임 워크를 만들 것이 아니라면 private 필드의 값을 변경할 이유가 없다.
+```java
+public final class BookRecord {
+    private static final String finalAuthor = "finalAuthor";
+    private String author = "author";
+    private static final String bookTitle = "final bookTitle";
+
+    public static String getFinalAuthor() {
+        return finalAuthor;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+}
+```
+```java
+import static org.junit.Assert.assertEquals;
+
+import java.lang.reflect.Field;
+import org.junit.Test;
+
+public class BookRecordTest {
+    @Test
+    public void mutateBookRecordState() throws NoSuchFieldException, IllegalAccessException{
+        final BookRecord bookRecord = new BookRecord();
+        final Field finalAuthor = bookRecord.getClass().getDeclaredField("finalAuthor");
+        final Field author = bookRecord.getClass().getDeclaredField("author");
+
+        author.setAccessible(true);
+        author.set(bookRecord, "set author");
+
+        assertEquals("set author", bookRecord.getAuthor());
+        
+        //Error - Can not set static final java.lang.String field
+        finalAuthor.setAccessible(true);
+        finalAuthor.set(bookRecord, "set author");
+    }
+}
+```
+
+#### Hashtable 클래스가 이미 존재하는데 왜 HashMap 클래스를 추가하는가?
+* Hashtable 클래스는 동기화할 수 있으며 병렬 처리에 효율적이다. 단, 어떤 단일 스레드 작업이든 오버헤드 때문에 성능이 상당히 저하된다. 
+* HashMap 은 동기화할 수 없다.
+* 병렬 환경에서의 Map 인터페이스를 사용하는 곳에는 ConcurrentHashMap (java 5 에서 추가됨) 클래스를 사용하는게 좋다.

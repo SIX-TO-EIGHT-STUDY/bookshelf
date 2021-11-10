@@ -105,3 +105,86 @@ class Rectangle(val height: Int, val width: Int) {
 #### 2.2.3 코틀린 소스코드 구조: 디렉터리와 패키지
 * 코틀린에서는 여러 클래스를 한 파일에 넣을 수도 있고, 파일의 이름도 마음대로 정할 수 있다.
 * 하지만 대부분의 경우 자바와 같이 패키지별로 디렉터리를 구성하는 편이 낫다. 특히 자바와 코틀린을 함께 사용하는 프로젝트에서는 자바의 방식을 따르는게 중요하다.
+
+
+### 2.3 선택 표현과 처리: enum 과 when
+
+#### 2.3.1 enum 클래스 정의
+```kotlin
+enum class Color (
+  val r: Int, val g: Int, val b: Int
+        ) {
+    RED(255, 0, 0), ORANGE(255, 165, 0), YELLOW(255, 255, 0);
+  
+  fun rgb() = (r * 256 + g) * 256 +b
+}
+```
+
+* enum 에서도 일반적인 클래스와 마찬가지로 생성자와 프로퍼티를 선언한다.
+* enum 클래스 안에서 메소드를 정의하는 경우 반드시 enum 상수 목록과 정의 사이에 세미콜론을 넣어야 한다.
+
+#### 2.3.2 when 으로 enum 클래스 다루기
+* switch 에 해당하는 코틀린 구성요소는 when 이다.
+```kotlin
+fun getMnemonic(color: Color) = when (color) {
+    Color.RED -> "Richard"
+    Color.ORANGE -> "Of"
+}
+
+```
+* 자바와 달리 각 분기의 끝에 break 를 넣지 않아도 된다.
+
+```kotlin
+fun getWarmth(color: Color) = when(color) {
+    Color.RED, Color.ORANGE -> "warm"
+}
+```
+
+* 한 분기 안에서 여러 값을 매치 패턴으로 사용할 수도 있다.
+
+#### 2.3.3 when 과 임의의 객체를 함께 사용
+```kotlin
+fun mix(c1: Color, c2: Color) = when (setOf(c1, c2)) {
+  setOf(RED, YELLOW) -> ORANGE
+  setOf(YELLOW, BLUE) -> GREEN
+  else -> throw Exception("Dirty color")
+}
+```
+
+* when 의 분기 조건에 여러 다른 객체와 식을 넣을 수 있기 때문에 많은 경우 코드를 더 간결하고 아름답게 작성할 수 있다.
+
+#### 2.3.4 인자 없는 when 사용
+```kotlin
+fun mixOptimized(c1: Color, c2: Color) = when {
+  (c1 == RED && c2 == YELLOW) || (c1 == YELLOW && c2 == RED) -> ORANGE
+  (c1 == YELLOW && c2 == BLUE) || (c1 == BLUE && c2 == YELLOW) -> GREEN
+  else -> throw Exception("Dirty color")
+}
+```
+* Set 인스턴스를 생성하지 않기 때문에 가비지 객체가 늘어나는 것을 방지한다.
+* 다만, 가독성이 떨어진다.
+
+#### 2.3.5 스마트 캐스트: 타입 검사와 타입 캐스트를 조합
+* 코틀린에서는 프로그래머 대신 컴파일러가 캐스팅을 해준다. 
+  어떤 변수가 변수가 원하는 타입인지 일단 is 로 검사하고 나면 굳이 변수를 원하는 타입으로 캐스팅하지 않아도 된다. 이를 **스마트 캐스트** 라고 부른다.
+  
+```kotlin
+if (e is Sum) {
+    return eval(e.right) + eval(e.left)
+}
+```
+* 스마트 캐스트는 is 로 변수에 든 값의 타입을 검사한 다음에 그 값이 바뀔 수 없는 경우에만 작동한다. 
+* 그 프로퍼티는 반드시 val 이어야 하며 커스텀 접근자를 사용한 것이어도 안된다.
+
+#### 2.3.6 리팩토링: if 를 when 으로 변경
+```kotlin
+fun eval(e: Expr): Int = when(e) {
+  is Num -> e.value
+  is Sum -> eval(e.right) + eval(e.left)
+  else -> throw IllegalArgumentException("Unknown expression")
+}
+```
+
+#### 2.3.7 if 와 when 분기에서 블록을 사용
+* if 나 when 모두 분기에서 블록을 사용할 수 있다. 그런 경우 블록의 마지막 문장이 블록 전체의 결과가 된다.
+* 하지만, 이 규칙은 함수에 대해서는 성립하지 않는다. 식이 본문인 함수는 블록을 본문으로 가질 수 없고 블록이 본문인 함수는 내부에 return 문이 반드시 있어야 한다.

@@ -188,3 +188,78 @@ fun eval(e: Expr): Int = when(e) {
 #### 2.3.7 if 와 when 분기에서 블록을 사용
 * if 나 when 모두 분기에서 블록을 사용할 수 있다. 그런 경우 블록의 마지막 문장이 블록 전체의 결과가 된다.
 * 하지만, 이 규칙은 함수에 대해서는 성립하지 않는다. 식이 본문인 함수는 블록을 본문으로 가질 수 없고 블록이 본문인 함수는 내부에 return 문이 반드시 있어야 한다.
+
+### 2.4 대상을 이터레이션: while 과 for 루프
+* 2장에서 설명한 코틀린 특성 중 자바와 가장 비슷한 것이 이터레이션이다.
+* for 는 자바의 for-each 루프에 해당하는 형태만 존재한다.
+* 코틀린의 for 는 C# 과 마찬가지로 for<아이템> in <원소들> 형태를 취한다.
+
+#### 2.4.1 while 루프
+#### 2.4.2 수에 대한 이터레이션: 범위와 수열
+*  앞에서 설명했지만 코틀린에는 자바의 for 루프에 해당하는 요소가 없다.
+* 이런 루프의 가장 흔한 용례인 초기값, 증가 값, 최종 값을 사용한 루프를 대신하기 위해 코틀린에서는 범위(range)를 사용한다.
+```kotlin
+val oneToTen = 1..10
+```
+
+#### 2.4.3 맵에 대한 이터레이션
+* 원소를 풀어서 letter 와 binary 라는 두 변수에 저장한다.
+
+```kotlin
+val binaryReps = TreeMap<Char,String>()
+for((letter, binary) in binaryReps) {
+    println("$letter = $binary")
+}
+```
+* get 과 put 을 사용하는 대신 map[key] 나 map[key] = value 를 사용해 값을 가져오고 설정할 수 있다.
+
+#### 2.4.4 in 으로 컬렉션이나 범위의 원소 검사
+* when 에서 in 사용하기
+```kotlin
+fun recognize(c: Char) = when (c) {
+    in '0'..'9' -> "It's a digit!"
+    in 'a'..'z', 'A'..'Z' -> "It's a letter!"
+    else -> "I don't konw.."
+}
+```
+
+* in 연산자를 사용하면 값이 범위안에 속하는지 항상 결정할 수 있다.
+```kotlin
+println("Kotlin" in "Java".."Scala")
+```
+
+>> true
+
+### 2.5 코틀린의 예외 처리
+* 다른 클래스와 마찬가지로 예외 인스턴스를 만들 때도 new 를 붙일 필요가 없다.
+* 자바와 달리 코틀린의 throw 는 식이므로 다른 식에 포함될 수 있다.
+```kotlin
+
+ var percentage =
+    if (number in 0..100) {
+        number
+    } else {
+        throw IllegalArgumentException("...")
+    }
+
+```
+#### 2.5.1 try, catch, finally
+* 자바와 마찬가지로 예외를 처리하려면 try, catch, finally 절을 함께 사용한다.
+* 함수를 던질 수 있는 예외를 명시할 필요가 없다.
+  * 자바 코드와 가장 큰 차이는 throws 절이 코드에 없다는 점이다.
+* 코틀린에서는 함수가 던지는 예외를 지정하지 않고 발생한 에외를 잡아내도 되고 잡아내지 않아도 된다.
+
+#### 2.5.3 try 를 식으로 사용
+* try 를 식으로 사용하기
+* 코틀린의 try 키워드는 if 나 when 과 마찬가지로 식이다. 따라서 try 의 값을 변수에 대입할 수 있다.
+* try 코드 블록의 실행이 정상적으로 끝나면 그 블록의 마지막 식의 값이 결과이다.
+```kotlin
+
+ fun readNumber(reader: BufferedReader) {
+     val number = try {
+         Integer.parseInt(reader.readLine())
+     } catch (e: NumberFormatException) {
+         null
+     }
+ }
+```
